@@ -190,112 +190,113 @@ class _HistorialIniciosViewState extends State<HistorialIniciosView> {
           ),
         ],
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: isRecent ? const Color(0xFF8B0000) : Colors.grey[400],
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Icon(
-            _getDispositivoIcon(registro.dispositivoInfo),
-            color: Colors.white,
-            size: 24,
-          ),
-        ),
-        title: Consumer<AuthViewModel>(
-          builder: (context, authVM, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Mostrar correo del usuario
-                Text(
-                  authVM.currentUser?.correo ?? 'usuario@correo.com',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: const Color(0xFF8B0000),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                // Mostrar fecha y hora
-                Text(
-                  _historialViewModel.formatearFecha(registro.fechaInicio),
-                  style: TextStyle(
-                    fontWeight: isRecent ? FontWeight.w500 : FontWeight.w400,
-                    fontSize: 16,
-                    color: isRecent ? Colors.black87 : Colors.black54,
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-        subtitle: Column(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Mostrar fecha específica si es "Hoy"
-            if (_historialViewModel.formatearFecha(registro.fechaInicio).startsWith('Hoy')) ...[
-              const SizedBox(height: 2),
-              Text(
-                _historialViewModel.obtenerFechaEspecifica(registro.fechaInicio),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
-                  fontStyle: FontStyle.italic,
-                ),
+            // Ícono del dispositivo
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: isRecent ? const Color(0xFF8B0000) : Colors.grey[400],
+                borderRadius: BorderRadius.circular(24),
               ),
-            ],
-            const SizedBox(height: 4),
-            Text(
-              registro.dispositivoInfo,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
+              child: Icon(
+                _getDispositivoIcon(registro.dispositivoInfo),
+                color: Colors.white,
+                size: 24,
               ),
             ),
-            if (registro.direccionIP != null && registro.direccionIP!.isNotEmpty) ...[
-              const SizedBox(height: 2),
-              Row(
-                children: [
-                  Icon(
-                    Icons.public,
-                    size: 14,
-                    color: Colors.grey[500],
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'IP: ${registro.direccionIP}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[500],
-                      fontFamily: 'monospace',
-                    ),
-                  ),
-                ],
+            const SizedBox(width: 16),
+            // Contenido principal
+            Expanded(
+              child: Consumer<AuthViewModel>(
+                builder: (context, authVM, child) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Mostrar correo del usuario
+                      Text(
+                        authVM.currentUser?.correo ?? 'usuario@correo.com',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: const Color(0xFF8B0000),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      // Mostrar fecha y hora
+                      Text(
+                        _historialViewModel.formatearFecha(registro.fechaInicio),
+                        style: TextStyle(
+                          fontWeight: isRecent ? FontWeight.w500 : FontWeight.w400,
+                          fontSize: 16,
+                          color: isRecent ? Colors.black87 : Colors.black54,
+                        ),
+                      ),
+                      // Mostrar fecha específica si es "Hoy"
+                      if (_historialViewModel.formatearFecha(registro.fechaInicio).startsWith('Hoy')) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          _historialViewModel.obtenerFechaEspecifica(registro.fechaInicio),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 6),
+                      // Mostrar IP si está disponible
+                      if (registro.direccionIP != null && registro.direccionIP!.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.public,
+                              size: 14,
+                              color: Colors.grey[500],
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'IP: ${registro.direccionIP}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[500],
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  );
+                },
               ),
-            ],
-          ],
-        ),
-        trailing: isRecent 
-          ? Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFF8B0000),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                'Reciente',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
+            ),
+            // Badge "Reciente" si es el más reciente
+            if (isRecent) 
+              Container(
+                margin: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8B0000),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'Reciente',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            )
-          : null,
+          ],
+        ),
       ),
     );
   }

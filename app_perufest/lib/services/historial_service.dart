@@ -8,9 +8,13 @@ class HistorialService {
 
   // Registrar un nuevo inicio de sesión
   static Future<void> registrarInicioSesion(String usuarioId) async {
+    print('🚀 Iniciando registro de inicio de sesión para usuario: $usuarioId');
     try {
       final dispositivoInfo = _obtenerInfoDispositivo();
+      print('📱 Dispositivo: $dispositivoInfo');
+      
       final ip = await _obtenerIP(); // Obtener IP real
+      print('🌐 IP final para guardar: ${ip ?? "null"}');
       
       final registro = RegistroInicio(
         id: '', // Se asigna automáticamente por Firestore
@@ -20,13 +24,17 @@ class HistorialService {
         direccionIP: ip, // IP real o null si falla
       );
 
+      print('💾 Guardando registro: ${registro.toJson()}');
       final docRef = await _registrosInicio.add(registro.toJson());
-      print('📝 Registro de inicio guardado con ID: ${docRef.id}');
+      print('✅ Registro de inicio guardado con ID: ${docRef.id}');
       if (ip != null) {
         print('🌐 Con IP: $ip');
+      } else {
+        print('⚠️ Sin IP capturada');
       }
     } catch (e) {
       print('❌ Error al registrar inicio de sesión: $e');
+      print('❌ Stack trace: ${e.toString()}');
     }
   }
 
@@ -70,23 +78,71 @@ class HistorialService {
     }
   }
 
-  // Obtener dirección IP pública de manera simple
+  // Obtener dirección IP pública con servicios alternativos
   static Future<String?> _obtenerIP() async {
-    try {
-      final response = await http.get(
-        Uri.parse('https://api.ipify.org'),
-        headers: {'Content-Type': 'text/plain'},
-      ).timeout(const Duration(seconds: 5));
+    print('🔄 Intentando obtener IP...');
+    
+    // Lista de servicios para obtener IP
+    final servicios = [
+      'https://api.ipify.org',
+      'https://httpbin.org/ip',
+      'https://ipecho.net/plain',
+    ];
+    
+    for (int i = 0; i < servicios.length; i++) {
+      final servicio = servicios[i];
+      print('🌐 Intentando con servicio ${i + 1}: $servicio');
       
-      if (response.statusCode == 200) {
-        final ip = response.body.trim();
-        print('🌐 IP obtenida: $ip');
-        return ip;
+      try {
+        final response = await http.get(
+          Uri.parse(servicio),
+          headers: {'Content-Type': 'text/plain'},
+        ).timeout(const Duration(seconds: 8));
+        
+        print('📡 Respuesta HTTP: ${response.statusCode}');
+        
+        if (response.statusCode == 200) {
+          String ip = response.body.trim();
+          
+          // Para httpbin.org/ip, la respuesta es JSON
+          if (servicio.contains('httpbin')) {
+            try {
+              final jsonResponse = response.body;
+              final match = RegExp(r'"origin":\s*"([^"]+)"').firstMatch(jsonResponse);
+              if (match != null) {
+                ip = match.group(1)!.split(',')[0].trim(); // Tomar solo la primera IP
+              }
+            } catch (e) {
+              print('⚠️ Error parseando JSON de httpbin: $e');
+              continue;
+            }
+          }
+          
+          if (ip.isNotEmpty && _esIPValida(ip)) {
+            print('✅ IP obtenida exitosamente: $ip');
+            return ip;
+          } else {
+            print('⚠️ IP inválida o vacía: $ip');
+          }
+        } else {
+          print('❌ Error HTTP: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('❌ Error con servicio $servicio: $e');
+        if (i < servicios.length - 1) {
+          print('🔄 Intentando con siguiente servicio...');
+        }
       }
-    } catch (e) {
-      print('❌ Error obteniendo IP: $e');
     }
+    
+    print('🚫 No se pudo obtener IP de ningún servicio');
     return null;
+  }
+
+  // Validar si la IP tiene formato correcto
+  static bool _esIPValida(String ip) {
+    final ipRegex = RegExp(r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$');
+    return ipRegex.hasMatch(ip);
   }
 
   // Limpiar registros antiguos (opcional - más de 90 días)

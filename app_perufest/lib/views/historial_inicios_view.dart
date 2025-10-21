@@ -205,13 +205,33 @@ class _HistorialIniciosViewState extends State<HistorialIniciosView> {
             size: 24,
           ),
         ),
-        title: Text(
-          _historialViewModel.formatearFecha(registro.fechaInicio),
-          style: TextStyle(
-            fontWeight: isRecent ? FontWeight.w600 : FontWeight.w500,
-            fontSize: 16,
-            color: isRecent ? const Color(0xFF8B0000) : Colors.black87,
-          ),
+        title: Consumer<AuthViewModel>(
+          builder: (context, authVM, child) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Mostrar correo del usuario
+                Text(
+                  authVM.currentUser?.correo ?? 'usuario@correo.com',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: const Color(0xFF8B0000),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                // Mostrar fecha y hora
+                Text(
+                  _historialViewModel.formatearFecha(registro.fechaInicio),
+                  style: TextStyle(
+                    fontWeight: isRecent ? FontWeight.w500 : FontWeight.w400,
+                    fontSize: 16,
+                    color: isRecent ? Colors.black87 : Colors.black54,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

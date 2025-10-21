@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "74578111422",
+    "project_id": "bd-parque-perufest",
+    "storage_bucket": "bd-parque-perufest.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74578111422:android:8c2827a7b62a99dd6767ef",
+        "android_client_info": {
+          "package_name": "com.example.app_perufest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtzu5u02SLpo_k9WTVjbG2bc8SS86_3dM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

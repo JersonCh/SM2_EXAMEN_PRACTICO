@@ -216,6 +216,18 @@ class _HistorialIniciosViewState extends State<HistorialIniciosView> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Mostrar fecha específica si es "Hoy"
+            if (_historialViewModel.formatearFecha(registro.fechaInicio).startsWith('Hoy')) ...[
+              const SizedBox(height: 2),
+              Text(
+                _historialViewModel.obtenerFechaEspecifica(registro.fechaInicio),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
             const SizedBox(height: 4),
             Text(
               registro.dispositivoInfo,

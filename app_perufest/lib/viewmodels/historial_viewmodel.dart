@@ -74,4 +74,9 @@ class HistorialViewModel extends ChangeNotifier {
       return '${fecha.day}/${fecha.month}/${fecha.year}';
     }
   }
+
+  // Obtener fecha específica para mostrar como descripción adicional
+  String obtenerFechaEspecifica(DateTime fecha) {
+    return '${fecha.day}/${fecha.month}/${fecha.year}';
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/registro_inicio.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class HistorialService {
   static final _registrosInicio = FirebaseFirestore.instance.collection('registrosiniciochambi');
@@ -9,17 +10,21 @@ class HistorialService {
   static Future<void> registrarInicioSesion(String usuarioId) async {
     try {
       final dispositivoInfo = _obtenerInfoDispositivo();
+      final ip = await _obtenerIP(); // Obtener IP real
       
       final registro = RegistroInicio(
         id: '', // Se asigna automáticamente por Firestore
         usuarioId: usuarioId,
         fechaInicio: DateTime.now(),
         dispositivoInfo: dispositivoInfo,
-        direccionIP: null, // Opcional para móviles
+        direccionIP: ip, // IP real o null si falla
       );
 
       final docRef = await _registrosInicio.add(registro.toJson());
       print('📝 Registro de inicio guardado con ID: ${docRef.id}');
+      if (ip != null) {
+        print('🌐 Con IP: $ip');
+      }
     } catch (e) {
       print('❌ Error al registrar inicio de sesión: $e');
     }
@@ -63,6 +68,25 @@ class HistorialService {
     } catch (e) {
       return 'Dispositivo desconocido';
     }
+  }
+
+  // Obtener dirección IP pública de manera simple
+  static Future<String?> _obtenerIP() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://api.ipify.org'),
+        headers: {'Content-Type': 'text/plain'},
+      ).timeout(const Duration(seconds: 5));
+      
+      if (response.statusCode == 200) {
+        final ip = response.body.trim();
+        print('🌐 IP obtenida: $ip');
+        return ip;
+      }
+    } catch (e) {
+      print('❌ Error obteniendo IP: $e');
+    }
+    return null;
   }
 
   // Limpiar registros antiguos (opcional - más de 90 días)

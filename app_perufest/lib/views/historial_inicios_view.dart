@@ -256,14 +256,25 @@ class _HistorialIniciosViewState extends State<HistorialIniciosView> {
                 color: Colors.grey[600],
               ),
             ),
-            if (registro.direccionIP != null) ...[
+            if (registro.direccionIP != null && registro.direccionIP!.isNotEmpty) ...[
               const SizedBox(height: 2),
-              Text(
-                'IP: ${registro.direccionIP}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
-                ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.public,
+                    size: 14,
+                    color: Colors.grey[500],
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'IP: ${registro.direccionIP}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[500],
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ],
               ),
             ],
           ],

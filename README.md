@@ -65,10 +65,10 @@ Los administradores pueden actualizar en tiempo real la información de eventos 
 ## Capturas de Pantalla
 
 ### Pantalla de Inicio de Sesión de usuario 1
-![Imagen 1](imagen1.png)
+![Imagen 1](imagen1.PNG)
 
 ### Historial de Inicios de Sesión de usuario 2
-![Imagen 2](imagen2.png)
+![Imagen 2](imagen2.PNG)
 
 ---
 
